@@ -1,0 +1,20 @@
+{
+  "name": "MinotaBot",
+  "version": "1.0.0",
+  "main": "index.js",
+  "repository": "https://github.com/minotaa/MinotaBot",
+  "author": "Juan Pichardo <jpichardo369@gmail.com>",
+  "license": "GPL-3.0",
+  "private": false,
+  "dependencies": {
+    "@types/node": "^18.16.3",
+    "@types/node-fetch": "^2.6.3",
+    "chatgpt": "^5.2.2",
+    "discord.js": "^14.10.2",
+    "dotenv": "^16.0.3",
+    "kleur": "^4.1.5",
+    "node-fetch": "2.6.1",
+    "typescript": "^5.0.4"
+  },
+  "type": "commonjs"
+}
