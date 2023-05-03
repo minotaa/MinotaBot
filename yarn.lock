@@ -593,6 +593,11 @@ semver@^7.3.4, semver@^7.3.8:
   dependencies:
     lru-cache "^6.0.0"
 
+smart-truncate@^1.0.1:
+  version "1.0.1"
+  resolved "https://registry.yarnpkg.com/smart-truncate/-/smart-truncate-1.0.1.tgz#a2173d7abc724a5a30e1b63af88616228b14a475"
+  integrity sha512-f+kSLMDWKSCpYhwOZM+Da4d8klk5nY4gH57HOEOaaotsZEsTIm/51/9vKDNE26WjU72eBM1zEYdQl6uDwvZfLg==
+
 spdx-correct@^3.0.0:
   version "3.2.0"
   resolved "https://registry.yarnpkg.com/spdx-correct/-/spdx-correct-3.2.0.tgz#4f5ab0668f0059e34f9c00dce331784a12de4e9c"

@@ -2,11 +2,12 @@ import { SlashCommandBuilder, REST, Routes, Client, Events, GatewayIntentBits, C
 import "dotenv/config"
 import { green, reset, yellow } from "kleur"
 import { ChatGPTAPI } from 'chatgpt'
+import smartTruncate from 'smart-truncate'
 
 const TOKEN = process.env.BOT_TOKEN
 const client = new Client({ intents: [GatewayIntentBits.Guilds] })
 const api = new ChatGPTAPI({ apiKey: process.env.OPENAI_API_KEY })
-const conversations = new Collection<string, string>()
+let lastConversation: string
 
 client.once(Events.ClientReady, async c => {
   let commands = [
@@ -18,7 +19,10 @@ client.once(Events.ClientReady, async c => {
         .setName('message')
         .setDescription('Message to send to ChatGPT.')
         .setRequired(true)
-    ).toJSON()
+    ).toJSON(),
+    new SlashCommandBuilder()
+      .setName("wipe")
+      .setDescription('Wipes the previous ChatGPT conversation from memory.').toJSON()
   ]
 	console.log(green("✓"), reset(`Ready! Successfully logged in as ${c.user.tag}!`));
   console.log(yellow("..."), reset("Attempting to send slash commands to Discord..."))
@@ -37,20 +41,20 @@ client.on(Events.InteractionCreate, async interaction => {
   if (!interaction.isChatInputCommand()) return
   if (interaction.commandName.toLowerCase() == 'chat') {
     try {
-      if (conversations.has(interaction.user.id)) { // @ts-ignore
+      if (lastConversation) { // @ts-ignore
         let message = interaction.options.getString('message')
         await interaction.deferReply()
         const res = await api.sendMessage(message, {
-          parentMessageId: conversations.get(interaction.user.id),
+          parentMessageId: lastConversation,
         })
-        conversations.set(interaction.user.id, res.parentMessageId)
-        await interaction.editReply({ content: res.text }) 
+        lastConversation = res.parentMessageId
+        await interaction.editReply({ content: smartTruncate(res.text, 2000), tts: true }) 
       } else { // @ts-ignore
         let message = interaction.options.getString('message')
         await interaction.deferReply()
         const res = await api.sendMessage(message)
-        conversations.set(interaction.user.id, res.parentMessageId)
-        await interaction.editReply({ content: res.text }) 
+        lastConversation = res.parentMessageId
+        await interaction.editReply({ content: smartTruncate(res.text, 2000), tts: true }) 
       }
     } catch (e) {
       console.error(e)
@@ -60,6 +64,9 @@ client.on(Events.InteractionCreate, async interaction => {
         await interaction.reply({ content: 'There was an error while executing this command!' });
       }
     }
+  } else if (interaction.commandName.toLowerCase() == 'wipe') {
+    lastConversation = undefined
+    await interaction.reply("Wiped previous conversation from memory.")
   }
 })
 
